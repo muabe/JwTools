@@ -348,5 +348,9 @@ public class OkWeb{
             call.cancel();
         }
     }
+
+    public OkHttpClient getOkHttpClient(){
+        return this.client;
+    }
 }
 
