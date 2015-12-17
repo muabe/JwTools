@@ -46,6 +46,7 @@ public class OkWeb{
     protected boolean debug = false;
     private Call call;
 
+
     public OkWeb(String host) {
         client = new OkHttpClient();
         header = new HashMap<>();
@@ -99,7 +100,8 @@ public class OkWeb{
         Request request = reqestBuilder.build();
         debugRequest("GET", paramString);
 
-        Response response = client.newCall(request).execute();
+        call = client.newCall(request);
+        Response response = call.execute();
         ResultType result = getResult(response, resultType);
         debugResponse(result.getBodyString(), response);
         unexpectedCode(response);
@@ -128,7 +130,8 @@ public class OkWeb{
                 .build();
         debugRequest("FORM", paramString);
 
-        Response response = client.newCall(request).execute();
+        call = client.newCall(request);
+        Response response = call.execute();
         ResultType result = getResult(response, resultType);
         debugResponse(result.getBodyString(), response);
         unexpectedCode(response);
@@ -151,7 +154,8 @@ public class OkWeb{
                 .build();
         debugRequest("POST", text);
 
-        Response response = client.newCall(request).execute();
+        call = client.newCall(request);
+        Response response = call.execute();
         ResultType result = getResult(response, resultType);
         debugResponse(result.getBodyString(), response);
         unexpectedCode(response);
