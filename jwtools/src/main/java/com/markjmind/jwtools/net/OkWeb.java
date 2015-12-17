@@ -247,7 +247,7 @@ public class OkWeb{
         return this;
     }
 
-    public OkWeb addUri(String uri){
+    public OkWeb setUri(String uri){
         if(uri!=null) {
             this.uri = uri;
         }
