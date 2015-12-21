@@ -1,11 +1,19 @@
 package com.markjmind.jwtools.net;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.Date;
 
 /**
  * Created by markj on 2015-12-04.
@@ -41,21 +49,33 @@ public class Result extends ResultAdapter{
     }
 
    public <Dto>Dto fromJson(Class<Dto> dtoClass, String... deps) throws JSONException {
-        Gson gson = new Gson();
+        Gson gson = getCustomGson();
         Dto result = (Dto) gson.fromJson(getJSON(deps).toString(), dtoClass);
         return result;
     }
 
     public <Dto>Dto fromJson(Class<Dto> dtoClass, JSONObject json){
-        Gson gson = new Gson();
+        Gson gson = getCustomGson();
         Dto result = (Dto) gson.fromJson(json.toString(), dtoClass);
         return result;
     }
 
     public <Dto>Dto fromJson(TypeToken<?> typeToken, String... deps) throws JSONException {
-        Gson gson = new Gson();
+        Gson gson = getCustomGson();
         Dto result = (Dto) gson.fromJson(getJSON(deps).toString(), typeToken.getType());
         return result;
+    }
+
+    public Gson getCustomGson(){
+        GsonBuilder builder = new GsonBuilder();
+
+        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                return new Date(json.getAsJsonPrimitive().getAsLong());
+            }
+        });
+
+        return builder.create();
     }
 
 }
