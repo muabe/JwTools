@@ -25,11 +25,17 @@ public class Result extends ResultAdapter{
     }
 
     public JSONObject getJSON(String... deps_jsonKey) throws JSONException {
+        if(getBodyString()==null || getBodyString().length()==0){
+            return null;
+        }
         if(deps_jsonKey==null || deps_jsonKey.length==0){
             return new JSONObject(getBodyString());
         }else{
             JSONObject json = new JSONObject(getBodyString());
             for(String key:deps_jsonKey){
+                if(json.isNull(key)){
+                    return null;
+                }
                 json = json.getJSONObject(key);
             }
             return json;
@@ -37,20 +43,33 @@ public class Result extends ResultAdapter{
     }
 
     public JSONArray getJSONArray(String... deps_jsonKey) throws JSONException {
+        if(getBodyString()==null || getBodyString().length()==0){
+            return null;
+        }
         if(deps_jsonKey==null || deps_jsonKey.length==0){
             return new JSONArray(getBodyString());
         }else{
             JSONObject json = new JSONObject(getBodyString());
             for(int i=0;i<deps_jsonKey.length-1;i++){
+                if(json.isNull(deps_jsonKey[i])){
+                    return null;
+                }
                 json = json.getJSONObject(deps_jsonKey[i]);
+            }
+            if(json.isNull(deps_jsonKey[deps_jsonKey.length-1])){
+                return null;
             }
             return json.getJSONArray(deps_jsonKey[deps_jsonKey.length-1]);
         }
     }
 
    public <Dto>Dto fromJson(Class<Dto> dtoClass, String... deps) throws JSONException {
+        JSONObject jsonObject = getJSON(deps);
+        if(jsonObject==null){
+            return null;
+        }
         Gson gson = getCustomGson();
-        Dto result = (Dto) gson.fromJson(getJSON(deps).toString(), dtoClass);
+        Dto result = (Dto) gson.fromJson(jsonObject.toString(), dtoClass);
         return result;
     }
 
@@ -61,8 +80,12 @@ public class Result extends ResultAdapter{
     }
 
     public <Dto>Dto fromJson(TypeToken<?> typeToken, String... deps) throws JSONException {
+        JSONObject jsonObject = getJSON(deps);
+        if(jsonObject==null){
+            return null;
+        }
         Gson gson = getCustomGson();
-        Dto result = (Dto) gson.fromJson(getJSON(deps).toString(), typeToken.getType());
+        Dto result = (Dto) gson.fromJson(jsonObject.toString(), typeToken.getType());
         return result;
     }
 

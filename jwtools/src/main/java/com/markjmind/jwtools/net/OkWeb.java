@@ -6,13 +6,16 @@ import com.markjmind.jwtools.log.Loger;
 import com.squareup.okhttp.CacheControl;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -37,20 +40,27 @@ import javax.net.ssl.X509TrustManager;
 public class OkWeb{
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private OkHttpClient client;
     private HashMap<String, String> param;
     private HashMap<String, String> header;
+    private HashMap<String, File> file;
     private String host;
     private String uri;
     private String paramString;
     protected boolean debug = false;
     private Call call;
 
+    public static enum METHOD{
+        POST,PUT,DELETE,PATCH
+    }
+
 
     public OkWeb(String host) {
         client = new OkHttpClient();
         header = new HashMap<>();
         param = new HashMap<>();
+        file = new HashMap<>();
         uri = "";
         paramString = "";
         this.setHost(host);
@@ -85,7 +95,7 @@ public class OkWeb{
     }
 
     public <ResultType extends ResultAdapter>ResultType get(Class<ResultType> resultType) throws IOException, WebException {
-        HttpUrl.Builder builder = HttpUrl.parse(new URL(new URL(host), uri).toString()+ paramString).newBuilder();
+        HttpUrl.Builder builder = HttpUrl.parse(new URL(new URL(host), uri).toString() + paramString).newBuilder();
         String[] keys = getParamKeys();
         for (String key : keys) {
             builder.addEncodedQueryParameter(key, param.get(key));
@@ -100,6 +110,7 @@ public class OkWeb{
         Request request = reqestBuilder.build();
         debugRequest("GET", paramString);
 
+        clearAllParams();
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
@@ -109,10 +120,22 @@ public class OkWeb{
     }
 
     public <ResultType extends ResultAdapter>ResultType form(Class<ResultType> resultType) throws WebException, IOException {
+        return form(null, resultType);
+    }
+
+    public <ResultType extends ResultAdapter>ResultType form(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
+        if (method == null) {
+            method = METHOD.POST;
+        }
 
         Request.Builder reqestBuilder = new Request.Builder()
                 .url(new URL(new URL(host), uri).toString()+ paramString)
                 .cacheControl(new CacheControl.Builder().noCache().build());
+
+        String[] headerKeys = getHeaderKeys();
+        for (String key : headerKeys) {
+            reqestBuilder.addHeader(key, header.get(key));
+        }
 
         FormEncodingBuilder body = new FormEncodingBuilder();
         String[] keys = getParamKeys();
@@ -120,16 +143,11 @@ public class OkWeb{
             body.add(key, param.get(key));
         }
 
-        String[] headerKeys = getHeaderKeys();
-        for (String key : headerKeys) {
-            reqestBuilder.addHeader(key, header.get(key));
-        }
 
-        Request request = reqestBuilder
-                .post(body.build())
-                .build();
+        Request request = initMethod(method, reqestBuilder, body.build());
         debugRequest("FORM", paramString);
 
+        clearAllParams();
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
@@ -138,7 +156,45 @@ public class OkWeb{
         return result;
     }
 
+    public <ResultType extends ResultAdapter>ResultType multipart(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
+        if (method == null) {
+            method = METHOD.POST;
+        }
+        Request.Builder reqestBuilder = new Request.Builder()
+                .url(new URL(new URL(host), uri).toString() + paramString)
+                .cacheControl(new CacheControl.Builder().noCache().build());
 
+        String[] headerKeys = getHeaderKeys();
+        for (String key : headerKeys) {
+            reqestBuilder.addHeader(key, header.get(key));
+        }
+
+        MultipartBuilder body = new MultipartBuilder()
+                .type(MultipartBuilder.FORM);
+
+        String[] keys = getParamKeys();
+        for (String key : keys) {
+            body.addFormDataPart(key, param.get(key));
+        }
+
+        String[] fileKeys = getFileKeys();
+        for (String key : fileKeys) {
+            body.addPart(
+                    Headers.of("Content-Disposition", "form-data; name=\"" + param.get(key) + "\""),
+                    RequestBody.create(MEDIA_TYPE_PNG, file.get(fileKeys)));
+        }
+
+        Request request = initMethod(method, reqestBuilder, body.build());
+        debugRequest("MULTIPART", paramString);
+
+        clearAllParams();
+        call = client.newCall(request);
+        Response response = call.execute();
+        ResultType result = getResult(response, resultType);
+        debugResponse(result.getBodyString(), response);
+        unexpectedCode(response);
+        return result;
+    }
 
     public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
 
@@ -154,6 +210,7 @@ public class OkWeb{
                 .build();
         debugRequest("POST", text);
 
+        clearAllParams();
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
@@ -163,6 +220,19 @@ public class OkWeb{
         return result;
     }
 
+    public Request initMethod(METHOD method, Request.Builder reqestBuilder, RequestBody body) {
+        Request request;
+        if(METHOD.DELETE == method) {
+            request = reqestBuilder.delete(body).build();
+        }else if(METHOD.PUT== method){
+            request = reqestBuilder.put(body).build();
+        }
+        else{
+            request = reqestBuilder.post(body).build();
+        }
+
+        return request;
+    }
 
     public String[] getHeaderKeys() {
         if (header.size() == 0) {
@@ -219,6 +289,15 @@ public class OkWeb{
                 for (int i = paramKeys.length-1; i>=0; i--) {
                     String key = paramKeys[i];
                     Log.d(this.getClass().getSimpleName(), key + ":" + param.get(key));
+                }
+            }
+
+            String[] fileKeys = getFileKeys();
+            if (fileKeys.length > 0) {
+                Log.i(this.getClass().getSimpleName(), "- File");
+                for (int i = fileKeys.length-1; i>=0; i--) {
+                    String key = fileKeys[i];
+                    Log.d(this.getClass().getSimpleName(), key + ":" + file.get(key).getName());
                 }
             }
         }
@@ -296,6 +375,32 @@ public class OkWeb{
         return keys;
     }
 
+    public OkWeb clearFile() {
+        file.clear();
+        return this;
+    }
+
+    public OkWeb addFile(String key, File value) {
+        file.put(key, value);
+        return this;
+    }
+
+    public OkWeb removeFile(String key){
+        file.remove(key);
+        return this;
+    }
+
+    public String[] getFileKeys() {
+        if (file.size() == 0) {
+            return new String[0];
+        }
+        String keys[] = file.keySet().toArray(new String[0]);
+        if (keys == null) {
+            return new String[0];
+        }
+        return keys;
+    }
+
     public OkWeb addParamString(String paramString){
         if (paramString == null) {
             paramString = "";
@@ -306,6 +411,13 @@ public class OkWeb{
         return this;
     }
 
+    private void clearAllParams(){
+        clearHeader();
+        clearParam();
+        clearFile();
+//        uri = "";
+        paramString = "";
+    }
     public OkWeb ignoreVerify() {
         try {
             final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
