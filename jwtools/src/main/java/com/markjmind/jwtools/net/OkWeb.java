@@ -6,7 +6,6 @@ import com.markjmind.jwtools.log.Loger;
 import com.squareup.okhttp.CacheControl;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -40,7 +39,7 @@ import javax.net.ssl.X509TrustManager;
 public class OkWeb{
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+    private static final MediaType MEDIA_TYPE_IMAGE = MediaType.parse("application/octet-stream");
     private OkHttpClient client;
     private HashMap<String, String> param;
     private HashMap<String, String> header;
@@ -179,9 +178,12 @@ public class OkWeb{
 
         String[] fileKeys = getFileKeys();
         for (String key : fileKeys) {
-            body.addPart(
-                    Headers.of("Content-Disposition", "form-data; name=\"" + param.get(key) + "\""),
-                    RequestBody.create(MEDIA_TYPE_PNG, file.get(fileKeys)));
+//            body.addPart(
+//                    Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""),
+//                    RequestBody.create(MEDIA_TYPE_IMAGE, file.get(key)));
+            body
+                    .addFormDataPart("file", file.get(key).getName(),
+                            RequestBody.create(MEDIA_TYPE_IMAGE, file.get(key)));
         }
 
         Request request = initMethod(method, reqestBuilder, body.build());
@@ -194,6 +196,9 @@ public class OkWeb{
         debugResponse(result.getBodyString(), response);
         unexpectedCode(response);
         return result;
+    }
+    public <ResultType extends ResultAdapter>ResultType multipart(Class<ResultType> resultType) throws WebException, IOException {
+        return this.multipart(null, resultType);
     }
 
     public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
@@ -226,6 +231,8 @@ public class OkWeb{
             request = reqestBuilder.delete(body).build();
         }else if(METHOD.PUT== method){
             request = reqestBuilder.put(body).build();
+        }else if(METHOD.PATCH== method){
+            request = reqestBuilder.patch(body).build();
         }
         else{
             request = reqestBuilder.post(body).build();
