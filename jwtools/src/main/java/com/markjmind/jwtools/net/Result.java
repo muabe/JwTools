@@ -54,12 +54,13 @@ public class Result extends ResultAdapter{
                 if(json.isNull(deps_jsonKey[i])){
                     return null;
                 }
-                json = json.getJSONObject(deps_jsonKey[i]);
+                json = json.optJSONObject(deps_jsonKey[i]);
             }
             if(json.isNull(deps_jsonKey[deps_jsonKey.length-1])){
                 return null;
             }
-            return json.getJSONArray(deps_jsonKey[deps_jsonKey.length-1]);
+
+            return json.optJSONArray(deps_jsonKey[deps_jsonKey.length-1]);
         }
     }
 
