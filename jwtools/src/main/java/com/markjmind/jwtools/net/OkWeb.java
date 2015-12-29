@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -72,6 +73,12 @@ public class OkWeb{
 
     public String getHost() {
         return host;
+    }
+
+    public OkWeb setTimeOut(int seconds){
+        client.setConnectTimeout(seconds, TimeUnit.SECONDS); // connect timeout
+        client.setReadTimeout(seconds, TimeUnit.SECONDS);
+        return this;
     }
 
     protected <ResultType extends ResultAdapter> ResultType getResult(Response response, Class<ResultType> type) throws IOException {
