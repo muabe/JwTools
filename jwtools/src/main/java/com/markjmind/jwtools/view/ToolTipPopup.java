@@ -23,12 +23,7 @@ public class ToolTipPopup extends Dialog{
     private Animation animOut;
     private View onClickView;
 
-    protected ToolTipPopup(Context context){
-        super(context , android.R.style.Theme_Translucent_NoTitleBar);
-
-    }
-
-    public ToolTipPopup(Context context, int layoutId, View onClickView) {
+     public ToolTipPopup(Context context, int layoutId, View onClickView) {
         super(context , android.R.style.Theme_Translucent_NoTitleBar);
         this.onClickView = onClickView;
         this.contentView = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(layoutId, null);
