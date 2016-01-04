@@ -2,7 +2,6 @@ package com.markjmind.jwtools.view;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,7 +60,6 @@ public class ToolTipPopup extends Dialog{
         closeLayout.setClickable(true);
         frame.setClickable(true);
         frame.addView(closeLayout);
-        contentLayout.setBackgroundColor(Color.parseColor("#3300ff00"));
         contentView.setVisibility(View.INVISIBLE);
         contentView.setClickable(true);
         frame.addView(contentLayout);
