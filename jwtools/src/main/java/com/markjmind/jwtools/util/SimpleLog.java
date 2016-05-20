@@ -55,7 +55,7 @@ public class SimpleLog {
     }
 
     private String getLogPoint(){
-        return "log."+tag+Loger.callClass(tagClass);
+        return "log."+tag+Loger.callMethod(5);
     }
 
     public static void setLog(boolean isLog){
