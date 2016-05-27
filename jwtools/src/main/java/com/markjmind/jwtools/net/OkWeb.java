@@ -48,7 +48,7 @@ public class OkWeb{
     private String host;
     private String uri;
     private String paramString;
-    protected boolean debug = false;
+    protected boolean debug = true;
     private Call call;
 
     public static enum METHOD{
@@ -71,6 +71,15 @@ public class OkWeb{
         return this;
     }
 
+
+    private void addHeaderAll(Request.Builder reqestBuilder){
+        String[] headerKeys = getHeaderKeys();
+        for (String key : headerKeys) {
+            if(header.get(key) != null) {
+                reqestBuilder.addHeader(key, header.get(key));
+            }
+        }
+    }
     public String getHost() {
         return host;
     }
@@ -109,10 +118,8 @@ public class OkWeb{
         HttpUrl httpUrl = builder.build();
 
         Request.Builder reqestBuilder = new Request.Builder().url(httpUrl);
-        String[] headerKeys = getHeaderKeys();
-        for (String key : headerKeys) {
-            reqestBuilder.addHeader(key, header.get(key));
-        }
+        addHeaderAll(reqestBuilder);
+
         Request request = reqestBuilder.build();
         debugRequest("GET", paramString);
 
@@ -120,7 +127,7 @@ public class OkWeb{
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
-        debugResponse(result.getBodyString(), response);
+        debugResponse(result.getBody(), response);
         unexpectedCode(response);
         return result;
     }
@@ -138,10 +145,7 @@ public class OkWeb{
                 .url(new URL(new URL(host), uri).toString()+ paramString)
                 .cacheControl(new CacheControl.Builder().noCache().build());
 
-        String[] headerKeys = getHeaderKeys();
-        for (String key : headerKeys) {
-            reqestBuilder.addHeader(key, header.get(key));
-        }
+        addHeaderAll(reqestBuilder);
 
         FormEncodingBuilder body = new FormEncodingBuilder();
         String[] keys = getParamKeys();
@@ -157,7 +161,7 @@ public class OkWeb{
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
-        debugResponse(result.getBodyString(), response);
+        debugResponse(result.getBody(), response);
         unexpectedCode(response);
         return result;
     }
@@ -170,10 +174,7 @@ public class OkWeb{
                 .url(new URL(new URL(host), uri).toString() + paramString)
                 .cacheControl(new CacheControl.Builder().noCache().build());
 
-        String[] headerKeys = getHeaderKeys();
-        for (String key : headerKeys) {
-            reqestBuilder.addHeader(key, header.get(key));
-        }
+        addHeaderAll(reqestBuilder);
 
         MultipartBuilder body = new MultipartBuilder()
                 .type(MultipartBuilder.FORM);
@@ -200,7 +201,7 @@ public class OkWeb{
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
-        debugResponse(result.getBodyString(), response);
+        debugResponse(result.getBody(), response);
         unexpectedCode(response);
         return result;
     }
@@ -211,10 +212,7 @@ public class OkWeb{
     public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
 
         Request.Builder reqestBuilder = new Request.Builder();
-        String[] headerKeys = getHeaderKeys();
-        for (String key : headerKeys) {
-            reqestBuilder.addHeader(key, header.get(key));
-        }
+        addHeaderAll(reqestBuilder);
 
         RequestBody body = RequestBody.create(JSON, text);
         Request request = reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString)
@@ -226,7 +224,7 @@ public class OkWeb{
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
-        debugResponse(result.getBodyString(), response);
+        debugResponse(result.getBody(), response);
         unexpectedCode(response);
 
         return result;
@@ -278,54 +276,6 @@ public class OkWeb{
         return "";
     }
 
-    protected void debugRequest(String method, String text) throws MalformedURLException {
-        if (debug) {
-            Log.i(this.getClass().getSimpleName(), " ");
-            Log.w(this.getClass().getSimpleName(), "△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△");
-            Log.d(this.getClass().getSimpleName(), "★ API Call : " + Loger.callLibrary(this.getClass())+" ★");
-            Log.i(this.getClass().getSimpleName(), "○ [Request] " + method + " : " + new URL(new URL(host), uri).toString());
-            String[] headerKeys = getHeaderKeys();
-            if (headerKeys.length > 0) {
-                Log.i(this.getClass().getSimpleName(), "- Header");
-                for (String key : headerKeys) {
-                    Log.d(this.getClass().getSimpleName(), "" + key + ":" + header.get(key));
-                }
-            }
-
-            if (text != null && !"".equals(text)) {
-                Log.i(this.getClass().getSimpleName(), "- Text");
-                Log.d(this.getClass().getSimpleName(), text);
-            }
-
-            String[] paramKeys = getParamKeys();
-            if (paramKeys.length > 0) {
-                Log.i(this.getClass().getSimpleName(), "- Parameter");
-                for (int i = paramKeys.length-1; i>=0; i--) {
-                    String key = paramKeys[i];
-                    Log.d(this.getClass().getSimpleName(), key + ":" + param.get(key));
-                }
-            }
-
-            String[] fileKeys = getFileKeys();
-            if (fileKeys.length > 0) {
-                Log.i(this.getClass().getSimpleName(), "- File");
-                for (int i = fileKeys.length-1; i>=0; i--) {
-                    String key = fileKeys[i];
-                    Log.d(this.getClass().getSimpleName(), key + ":" + file.get(key).getName());
-                }
-            }
-        }
-
-    }
-
-    protected void debugResponse(String bodyResult, Response response) {
-        if (debug) {
-            Log.i(this.getClass().getSimpleName(), "● [Response] Code : " + response.code());
-            Log.i(this.getClass().getSimpleName(), "- body");
-            Log.d(this.getClass().getSimpleName(), bodyResult.replaceAll("\\r", ""));
-            Log.i(this.getClass().getSimpleName(), " ");
-        }
-    }
 
     private void unexpectedCode(Response response) throws WebException {
         if (!response.isSuccessful()) {
@@ -481,6 +431,57 @@ public class OkWeb{
 
     public OkHttpClient getOkHttpClient(){
         return this.client;
+    }
+
+    protected void debugRequest(String method, String text) throws MalformedURLException {
+        if (debug) {
+            Log.w(this.getClass().getSimpleName(), " ");
+            Log.w(this.getClass().getSimpleName(), "----------------------------------------------------------------------------------------------------------");
+            Log.d(this.getClass().getSimpleName(), "★ API Call : " + Loger.callLibrary(this.getClass())+" ★");
+            Log.i(this.getClass().getSimpleName(), "○ [Request] " + method + " : " + new URL(new URL(host), uri).toString());
+            String[] headerKeys = getHeaderKeys();
+            if (headerKeys.length > 0) {
+                Log.i(this.getClass().getSimpleName(), "  -Header");
+                for (String key : headerKeys) {
+                    Log.d(this.getClass().getSimpleName(), "    " + key + ":" + header.get(key));
+                }
+            }
+
+            if (text != null && !"".equals(text)) {
+                Log.i(this.getClass().getSimpleName(), "  -Text");
+                Log.d(this.getClass().getSimpleName(), "    "+text);
+            }
+
+            String[] paramKeys = getParamKeys();
+            if (paramKeys.length > 0) {
+                Log.i(this.getClass().getSimpleName(), "  -Parameter");
+                for (int i = paramKeys.length-1; i>=0; i--) {
+                    String key = paramKeys[i];
+                    Log.d(this.getClass().getSimpleName(), "    "+key + ":" + param.get(key));
+                }
+            }
+
+            String[] fileKeys = getFileKeys();
+            if (fileKeys.length > 0) {
+                Log.i(this.getClass().getSimpleName(), "  -File");
+                for (int i = fileKeys.length-1; i>=0; i--) {
+                    String key = fileKeys[i];
+                    Log.d(this.getClass().getSimpleName(), "    "+key + ":" + file.get(key).getName());
+                }
+            }
+        }
+
+    }
+
+    protected void debugResponse(String bodyResult, Response response) {
+        if (debug) {
+            Log.i(this.getClass().getSimpleName(), " ");
+            Log.i(this.getClass().getSimpleName(), "● [Response] Code : " + response.code());
+            Log.i(this.getClass().getSimpleName(), "  -body");
+            Log.d(this.getClass().getSimpleName(), bodyResult.replaceAll("\\r", ""));
+            Log.w(this.getClass().getSimpleName(), "----------------------------------------------------------------------------------------------------------");
+            Log.w(this.getClass().getSimpleName(), " ");
+        }
     }
 }
 

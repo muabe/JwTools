@@ -7,13 +7,16 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import com.markjmind.jwtools.util.JwJSONReader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by markj on 2015-12-04.
@@ -25,13 +28,13 @@ public class Result extends ResultAdapter{
     }
 
     public JSONObject getJSON(String... deps_jsonKey) throws JSONException {
-        if(getBodyString()==null || getBodyString().length()==0){
+        if(getBody()==null || getBody().length()==0){
             return null;
         }
         if(deps_jsonKey==null || deps_jsonKey.length==0){
-            return new JSONObject(getBodyString());
+            return new JSONObject(getBody());
         }else{
-            JSONObject json = new JSONObject(getBodyString());
+            JSONObject json = new JSONObject(getBody());
             for(String key:deps_jsonKey){
                 if(json.isNull(key)){
                     return null;
@@ -43,13 +46,13 @@ public class Result extends ResultAdapter{
     }
 
     public JSONArray getJSONArray(String... deps_jsonKey) throws JSONException {
-        if(getBodyString()==null || getBodyString().length()==0){
+        if(getBody()==null || getBody().length()==0){
             return null;
         }
         if(deps_jsonKey==null || deps_jsonKey.length==0){
-            return new JSONArray(getBodyString());
+            return new JSONArray(getBody());
         }else{
-            JSONObject json = new JSONObject(getBodyString());
+            JSONObject json = new JSONObject(getBody());
             for(int i=0;i<deps_jsonKey.length-1;i++){
                 if(json.isNull(deps_jsonKey[i])){
                     return null;
@@ -62,6 +65,11 @@ public class Result extends ResultAdapter{
 
             return json.optJSONArray(deps_jsonKey[deps_jsonKey.length-1]);
         }
+    }
+
+    public JwJSONReader.JSONType getJsonType(String... deps_jsonKey) throws JSONException{
+        JwJSONReader.JSONType type =  JwJSONReader.getJSONType(getJSON(deps_jsonKey), null);
+        return type;
     }
 
    public <Dto>Dto fromJson(Class<Dto> dtoClass, String... deps) throws JSONException {
@@ -88,6 +96,35 @@ public class Result extends ResultAdapter{
         Gson gson = getCustomGson();
         Dto result = (Dto) gson.fromJson(jsonObject.toString(), typeToken.getType());
         return result;
+    }
+
+    public <T>List<T> fromJsonList(Class<T> type) throws JSONException {
+        ArrayList<T> list = new ArrayList<>();
+        JSONArray array = getJSONArray();
+        if(array!=null) {
+            for (int i = 0; i < array.length(); i++) {
+                list.add(fromJson(type, array.getJSONObject(i)));
+            }
+        }
+        return list;
+    }
+
+    public <Dto>Dto getModel(Class<Dto> dtoClass, String... deps) throws JSONException {
+        return fromJson(dtoClass, deps);
+    }
+
+    public <Dto>Dto getModel(Class<Dto> dtoClass, JSONObject json){
+        Gson gson = getCustomGson();
+        Dto result = (Dto) gson.fromJson(json.toString(), dtoClass);
+        return fromJson(dtoClass, json);
+    }
+
+    public <Dto>Dto getModel(TypeToken<?> typeToken, String... deps) throws JSONException {
+        return fromJson(typeToken, deps);
+    }
+
+    public <T>List<T> getModelList(Class<T> type) throws JSONException {
+        return fromJsonList(type);
     }
 
     public Gson getCustomGson(){

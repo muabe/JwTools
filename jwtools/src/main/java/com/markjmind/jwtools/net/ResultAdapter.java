@@ -17,7 +17,7 @@ public class ResultAdapter {
         return this.response;
     }
 
-    public String getBodyString(){
+    public String getBody(){
         return this.bodyString;
     }
 
