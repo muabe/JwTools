@@ -128,15 +128,31 @@ public class OkWeb{
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
         debugResponse(result.getBody(), response);
-        unexpectedCode(response);
+        unexpectedCode(response, result.getBody());
         return result;
     }
 
-    public <ResultType extends ResultAdapter>ResultType form(Class<ResultType> resultType) throws WebException, IOException {
-        return form(null, resultType);
+    public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
+        Request.Builder reqestBuilder = new Request.Builder();
+        addHeaderAll(reqestBuilder);
+
+        RequestBody body = RequestBody.create(JSON, text);
+        Request request = reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString)
+                .post(body)
+                .build();
+        debugRequest("POST", text);
+
+        clearAllParams();
+        call = client.newCall(request);
+        Response response = call.execute();
+        ResultType result = getResult(response, resultType);
+        debugResponse(result.getBody(), response);
+        unexpectedCode(response, result.getBody());
+
+        return result;
     }
 
-    public <ResultType extends ResultAdapter>ResultType form(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
+    private <ResultType extends ResultAdapter>ResultType form(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
         if (method == null) {
             method = METHOD.POST;
         }
@@ -155,15 +171,35 @@ public class OkWeb{
 
 
         Request request = initMethod(method, reqestBuilder, body.build());
-        debugRequest("FORM", paramString);
+        String methodString = method.toString();
+        if(method.equals(METHOD.POST)){
+            methodString = "FORM";
+        }
+        debugRequest(methodString, paramString);
 
         clearAllParams();
         call = client.newCall(request);
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
         debugResponse(result.getBody(), response);
-        unexpectedCode(response);
+        unexpectedCode(response, result.getBody());
         return result;
+    }
+
+    public <ResultType extends ResultAdapter>ResultType form(Class<ResultType> resultType) throws WebException, IOException {
+        return form(null, resultType);
+    }
+
+    public <ResultType extends ResultAdapter>ResultType put(Class<ResultType> resultType) throws WebException, IOException {
+        return form(METHOD.PUT, resultType);
+    }
+
+    public <ResultType extends ResultAdapter>ResultType delete(Class<ResultType> resultType) throws WebException, IOException {
+        return form(METHOD.DELETE, resultType);
+    }
+
+    public <ResultType extends ResultAdapter>ResultType patch(Class<ResultType> resultType) throws WebException, IOException {
+        return form(METHOD.PATCH, resultType);
     }
 
     public <ResultType extends ResultAdapter>ResultType multipart(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
@@ -202,32 +238,11 @@ public class OkWeb{
         Response response = call.execute();
         ResultType result = getResult(response, resultType);
         debugResponse(result.getBody(), response);
-        unexpectedCode(response);
+        unexpectedCode(response, result.getBody());
         return result;
     }
     public <ResultType extends ResultAdapter>ResultType multipart(Class<ResultType> resultType) throws WebException, IOException {
         return this.multipart(null, resultType);
-    }
-
-    public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
-
-        Request.Builder reqestBuilder = new Request.Builder();
-        addHeaderAll(reqestBuilder);
-
-        RequestBody body = RequestBody.create(JSON, text);
-        Request request = reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString)
-                .post(body)
-                .build();
-        debugRequest("POST", text);
-
-        clearAllParams();
-        call = client.newCall(request);
-        Response response = call.execute();
-        ResultType result = getResult(response, resultType);
-        debugResponse(result.getBody(), response);
-        unexpectedCode(response);
-
-        return result;
     }
 
     public Request initMethod(METHOD method, Request.Builder reqestBuilder, RequestBody body) {
@@ -277,11 +292,11 @@ public class OkWeb{
     }
 
 
-    private void unexpectedCode(Response response) throws WebException {
+    private void unexpectedCode(Response response, String bodyString) throws WebException {
         if (!response.isSuccessful()) {
             Log.e(this.getClass().getSimpleName(), "Server Response Error Unexpected code:" + response.code());
             Log.e(this.getClass().getSimpleName(), response.message());
-            throw new WebException("Unexpected code " + response);
+            throw new WebException(response, bodyString, "Unexpected code " + response);
         }
     }
 
