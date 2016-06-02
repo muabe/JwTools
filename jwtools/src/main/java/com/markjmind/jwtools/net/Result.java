@@ -78,13 +78,13 @@ public class Result extends ResultAdapter{
             return null;
         }
         Gson gson = getCustomGson();
-        Dto result = (Dto) gson.fromJson(jsonObject.toString(), dtoClass);
+        Dto result = gson.fromJson(jsonObject.toString(), dtoClass);
         return result;
     }
 
     public <Dto>Dto fromJson(Class<Dto> dtoClass, JSONObject json){
         Gson gson = getCustomGson();
-        Dto result = (Dto) gson.fromJson(json.toString(), dtoClass);
+        Dto result = gson.fromJson(json.toString(), dtoClass);
         return result;
     }
 
@@ -94,7 +94,7 @@ public class Result extends ResultAdapter{
             return null;
         }
         Gson gson = getCustomGson();
-        Dto result = (Dto) gson.fromJson(jsonObject.toString(), typeToken.getType());
+        Dto result = gson.fromJson(jsonObject.toString(), typeToken.getType());
         return result;
     }
 
@@ -115,7 +115,7 @@ public class Result extends ResultAdapter{
 
     public <Dto>Dto getModel(Class<Dto> dtoClass, JSONObject json){
         Gson gson = getCustomGson();
-        Dto result = (Dto) gson.fromJson(json.toString(), dtoClass);
+        Dto result = gson.fromJson(json.toString(), dtoClass);
         return fromJson(dtoClass, json);
     }
 
@@ -138,5 +138,4 @@ public class Result extends ResultAdapter{
 
         return builder.create();
     }
-
 }
