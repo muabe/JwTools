@@ -80,6 +80,7 @@ public class OkWeb{
             }
         }
     }
+
     public String getHost() {
         return host;
     }
@@ -132,7 +133,27 @@ public class OkWeb{
         return result;
     }
 
-    public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
+//    public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
+//        Request.Builder reqestBuilder = new Request.Builder();
+//        addHeaderAll(reqestBuilder);
+//
+//        RequestBody body = RequestBody.create(JSON, text);
+//        Request request = reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString)
+//                .post(body)
+//                .build();
+//        debugRequest("POST", text);
+//
+//        clearAllParams();
+//        call = client.newCall(request);
+//        Response response = call.execute();
+//        ResultType result = getResult(response, resultType);
+//        debugResponse(result.getBody(), response);
+//        unexpectedCode(response, result.getBody());
+//
+//        return result;
+//    }
+
+    private <ResultType extends ResultAdapter>ResultType post(Class<ResultType> resultType, METHOD method, String text) throws IOException, WebException {
         Request.Builder reqestBuilder = new Request.Builder();
         addHeaderAll(reqestBuilder);
 
@@ -140,7 +161,7 @@ public class OkWeb{
         Request request = reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString)
                 .post(body)
                 .build();
-        debugRequest("POST", text);
+        debugRequest(method.toString(), text);
 
         clearAllParams();
         call = client.newCall(request);
@@ -153,9 +174,6 @@ public class OkWeb{
     }
 
     private <ResultType extends ResultAdapter>ResultType form(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
-        if (method == null) {
-            method = METHOD.POST;
-        }
 
         Request.Builder reqestBuilder = new Request.Builder()
                 .url(new URL(new URL(host), uri).toString()+ paramString)
@@ -173,7 +191,7 @@ public class OkWeb{
         Request request = initMethod(method, reqestBuilder, body.build());
         String methodString = method.toString();
         if(method.equals(METHOD.POST)){
-            methodString = "FORM";
+            methodString = method.toString()+"(FORM)";
         }
         debugRequest(methodString, paramString);
 
@@ -187,20 +205,52 @@ public class OkWeb{
     }
 
     public <ResultType extends ResultAdapter>ResultType form(Class<ResultType> resultType) throws WebException, IOException {
-        return form(null, resultType);
+        return form(METHOD.POST, resultType);
     }
 
+    public <ResultType extends ResultAdapter>ResultType post(Class<ResultType> resultType, String text) throws IOException, WebException {
+        if(text==null){
+            return this.form(METHOD.POST, resultType);
+        }else{
+            return this.post(resultType, METHOD.POST, text);
+        }
+
+    }
+    public <ResultType extends ResultAdapter>ResultType put(Class<ResultType> resultType, String text) throws WebException, IOException {
+        if(text==null){
+            return this.form(METHOD.PUT, resultType);
+        }else{
+            return this.post(resultType, METHOD.PUT, text);
+        }
+    }
+    public <ResultType extends ResultAdapter>ResultType delete(Class<ResultType> resultType, String text) throws WebException, IOException {
+        if(text==null){
+            return this.form(METHOD.DELETE, resultType);
+        }else{
+            return this.post(resultType, METHOD.DELETE, text);
+        }
+    }
+    public <ResultType extends ResultAdapter>ResultType patch(Class<ResultType> resultType, String text) throws WebException, IOException {
+        if(text==null){
+            return this.form(METHOD.PATCH, resultType);
+        }else{
+            return this.post(resultType, METHOD.PATCH, text);
+        }
+    }
+
+    public <ResultType extends ResultAdapter>ResultType post(Class<ResultType> resultType) throws IOException, WebException {
+        return this.post(resultType, null);
+    }
     public <ResultType extends ResultAdapter>ResultType put(Class<ResultType> resultType) throws WebException, IOException {
-        return form(METHOD.PUT, resultType);
+        return put(resultType, null);
     }
-
     public <ResultType extends ResultAdapter>ResultType delete(Class<ResultType> resultType) throws WebException, IOException {
-        return form(METHOD.DELETE, resultType);
+        return delete(resultType, null);
+    }
+    public <ResultType extends ResultAdapter>ResultType patch(Class<ResultType> resultType) throws WebException, IOException {
+        return patch(resultType, null);
     }
 
-    public <ResultType extends ResultAdapter>ResultType patch(Class<ResultType> resultType) throws WebException, IOException {
-        return form(METHOD.PATCH, resultType);
-    }
 
     public <ResultType extends ResultAdapter>ResultType multipart(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
         if (method == null) {
