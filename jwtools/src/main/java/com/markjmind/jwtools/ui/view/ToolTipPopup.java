@@ -1,4 +1,4 @@
-package com.markjmind.jwtools.view;
+package com.markjmind.jwtools.ui.view;
 
 import android.app.Dialog;
 import android.content.Context;
