@@ -159,17 +159,8 @@ public class OkWeb{
 
         RequestBody body = RequestBody.create(JSON, text);
         reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString);
-        if (method.equals(METHOD.PUT)) {
-            reqestBuilder.put(body);
-        }else if(method.equals(METHOD.DELETE)){
-            reqestBuilder.delete(body);
-        }else if(method.equals(METHOD.PATCH)){
-            reqestBuilder.patch(body);
-        }else{
-            reqestBuilder.post(body);
-        }
 
-        Request request = reqestBuilder.build();
+        Request request = initMethod(method, reqestBuilder, body);
         debugRequest(method.toString(), text);
 
         clearAllParams();
