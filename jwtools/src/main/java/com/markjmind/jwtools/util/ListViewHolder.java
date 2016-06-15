@@ -74,35 +74,42 @@ public class ListViewHolder {
 
 
     public View get(int id){
-        return views.get(id);
+        if(views.containsKey(id)) {
+            return views.get(id);
+        }else{
+            View view = finder.findViewById(id);
+            views.put(id, view);
+            return view;
+        }
     }
 
     public TextView getTextView(int id){
-        return (TextView)views.get(id);
+
+        return (TextView)get(id);
     }
 
     public ImageView getImageView(int id){
-        return (ImageView)views.get(id);
+        return (ImageView)get(id);
     }
 
     public EditText getEditText(int id){
-        return (EditText)views.get(id);
+        return (EditText)get(id);
     }
 
     public Button getButton(int id){
-        return (Button)views.get(id);
+        return (Button)get(id);
     }
 
     public ViewGroup getViewGroup(int id){
-        return (ViewGroup)views.get(id);
+        return (ViewGroup)get(id);
     }
 
     public LinearLayout getLinearLayout(int id){
-        return (LinearLayout)views.get(id);
+        return (LinearLayout)get(id);
     }
 
     public FrameLayout getFrameLayout(int id){
-        return (FrameLayout)views.get(id);
+        return (FrameLayout)get(id);
     }
 
     interface Finder{

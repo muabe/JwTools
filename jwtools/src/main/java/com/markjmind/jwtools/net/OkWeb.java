@@ -133,26 +133,6 @@ public class OkWeb{
         return result;
     }
 
-//    public <ResultType extends ResultAdapter>ResultType post(String text, Class<ResultType> resultType) throws IOException, WebException {
-//        Request.Builder reqestBuilder = new Request.Builder();
-//        addHeaderAll(reqestBuilder);
-//
-//        RequestBody body = RequestBody.create(JSON, text);
-//        Request request = reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString)
-//                .post(body)
-//                .build();
-//        debugRequest("POST", text);
-//
-//        clearAllParams();
-//        call = client.newCall(request);
-//        Response response = call.execute();
-//        ResultType result = getResult(response, resultType);
-//        debugResponse(result.getBody(), response);
-//        unexpectedCode(response, result.getBody());
-//
-//        return result;
-//    }
-
     private <ResultType extends ResultAdapter>ResultType post(Class<ResultType> resultType, METHOD method, String text) throws IOException, WebException {
         Request.Builder reqestBuilder = new Request.Builder();
         addHeaderAll(reqestBuilder);
