@@ -158,9 +158,18 @@ public class OkWeb{
         addHeaderAll(reqestBuilder);
 
         RequestBody body = RequestBody.create(JSON, text);
-        Request request = reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString)
-                .post(body)
-                .build();
+        reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString);
+        if (method.equals(METHOD.PUT)) {
+            reqestBuilder.put(body);
+        }else if(method.equals(METHOD.DELETE)){
+            reqestBuilder.delete(body);
+        }else if(method.equals(METHOD.PATCH)){
+            reqestBuilder.patch(body);
+        }else{
+            reqestBuilder.post(body);
+        }
+
+        Request request = reqestBuilder.build();
         debugRequest(method.toString(), text);
 
         clearAllParams();
