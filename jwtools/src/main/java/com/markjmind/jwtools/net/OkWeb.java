@@ -254,7 +254,7 @@ public class OkWeb{
         for (String key : fileKeys) {
 //            body.addPart(
 //                    Headers.of("Content-Disposition", "form-data; name=\"" + key + "\""),
-//                    RequestBody.create(MEDIA_TYPE_IMAGE, file.get(key)));
+//                    RequestBody.create(MEDIA_TYPE_IMAGE, file.getView(key)));
             body
                     .addFormDataPart("file", file.get(key).getName(),
                             RequestBody.create(MEDIA_TYPE_IMAGE, file.get(key)));

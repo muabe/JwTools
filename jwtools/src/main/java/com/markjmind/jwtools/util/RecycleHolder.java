@@ -22,19 +22,12 @@ import java.util.HashMap;
 public class RecycleHolder extends RecyclerView.ViewHolder{
     public HashMap<Integer, View> views = new HashMap();
     private Finder finder;
+    private View layout;
 
     public RecycleHolder(View itemView) {
         super(itemView);
         initFinder(itemView);
-    }
-
-    public RecycleHolder add(int... id){
-        if(id!=null) {
-            for (int i = 0; i < id.length; i++) {
-                views.put(id[i], finder.findViewById(id[i]));
-            }
-        }
-        return this;
+        this.layout = itemView;
     }
 
     private void initFinder(final View finder){
@@ -46,36 +39,47 @@ public class RecycleHolder extends RecyclerView.ViewHolder{
         };
     }
 
-    public View get(int id){
-        return views.get(id);
+    public View getView(int id){
+        if(views.containsKey(id)) {
+            return views.get(id);
+        }else{
+            View view = finder.findViewById(id);
+            views.put(id, view);
+            return view;
+        }
+    }
+
+    public View getLayout(){
+        return layout;
     }
 
     public TextView getTextView(int id){
-        return (TextView)views.get(id);
+
+        return (TextView) getView(id);
     }
 
     public ImageView getImageView(int id){
-        return (ImageView)views.get(id);
+        return (ImageView) getView(id);
     }
 
     public EditText getEditText(int id){
-        return (EditText)views.get(id);
+        return (EditText) getView(id);
     }
 
     public Button getButton(int id){
-        return (Button)views.get(id);
+        return (Button) getView(id);
     }
 
     public ViewGroup getViewGroup(int id){
-        return (ViewGroup)views.get(id);
+        return (ViewGroup) getView(id);
     }
 
     public LinearLayout getLinearLayout(int id){
-        return (LinearLayout)views.get(id);
+        return (LinearLayout) getView(id);
     }
 
     public FrameLayout getFrameLayout(int id){
-        return (FrameLayout)views.get(id);
+        return (FrameLayout) getView(id);
     }
 
     interface Finder{

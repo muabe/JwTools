@@ -1,7 +1,5 @@
 package com.markjmind.jwtools.util;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,16 +21,9 @@ import java.util.HashMap;
 public class ListViewHolder {
     public HashMap<Integer, View> views = new HashMap();
     private Finder finder;
+    private View layout;
 
     public ListViewHolder(View finder){
-        initFinder(finder);
-    }
-
-    public ListViewHolder(Activity finder){
-        initFinder(finder);
-    }
-
-    public ListViewHolder(Dialog finder){
         initFinder(finder);
     }
 
@@ -45,35 +36,11 @@ public class ListViewHolder {
         };
     }
 
-    private void initFinder(final Activity finder){
-        this.finder = new Finder() {
-            @Override
-            public View findViewById(int id) {
-                return finder.findViewById(id);
-            }
-        };
+    public View getLayout(){
+        return layout;
     }
 
-    private void initFinder(final Dialog finder){
-        this.finder = new Finder() {
-            @Override
-            public View findViewById(int id) {
-                return finder.findViewById(id);
-            }
-        };
-    }
-
-    public ListViewHolder add(int... id){
-        if(id!=null) {
-            for (int i = 0; i < id.length; i++) {
-                views.put(id[i], finder.findViewById(id[i]));
-            }
-        }
-        return this;
-    }
-
-
-    public View get(int id){
+    public View getView(int id){
         if(views.containsKey(id)) {
             return views.get(id);
         }else{
@@ -85,31 +52,31 @@ public class ListViewHolder {
 
     public TextView getTextView(int id){
 
-        return (TextView)get(id);
+        return (TextView) getView(id);
     }
 
     public ImageView getImageView(int id){
-        return (ImageView)get(id);
+        return (ImageView) getView(id);
     }
 
     public EditText getEditText(int id){
-        return (EditText)get(id);
+        return (EditText) getView(id);
     }
 
     public Button getButton(int id){
-        return (Button)get(id);
+        return (Button) getView(id);
     }
 
     public ViewGroup getViewGroup(int id){
-        return (ViewGroup)get(id);
+        return (ViewGroup) getView(id);
     }
 
     public LinearLayout getLinearLayout(int id){
-        return (LinearLayout)get(id);
+        return (LinearLayout) getView(id);
     }
 
     public FrameLayout getFrameLayout(int id){
-        return (FrameLayout)get(id);
+        return (FrameLayout) getView(id);
     }
 
     interface Finder{
