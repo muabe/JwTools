@@ -25,6 +25,8 @@ public class ListViewHolder {
 
     public ListViewHolder(View finder){
         initFinder(finder);
+        this.layout = finder;
+        views.clear();
     }
 
     private void initFinder(final View finder){
