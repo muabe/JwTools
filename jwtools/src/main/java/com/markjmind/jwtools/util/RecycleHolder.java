@@ -54,7 +54,6 @@ public class RecycleHolder extends RecyclerView.ViewHolder{
     }
 
     public TextView getTextView(int id){
-
         return (TextView) getView(id);
     }
 
