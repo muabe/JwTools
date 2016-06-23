@@ -170,24 +170,24 @@ public class DateTimeUtil {
 	 * 현재 날짜를 "yyyy-MM-dd" 형태의 포멧으로 표현하는 문자열을 리턴한다.
 	 * @return formatted string representation of current day with  "yyyy-MM-dd".
 	 */
-	public static String getDateString() {
+	public static String getDateString(Date date) {
 		java.text.SimpleDateFormat formatter =
 				new java.text.SimpleDateFormat(
 						"yyyy-MM-dd",
 						java.util.Locale.KOREA);
-		return formatter.format(new Date());
+		return formatter.format(date);
 	}
 
 	/**
 	 * 현재 날짜를 "yyyy-MM-dd" 형태의 포멧으로 표현하는 문자열을 리턴한다.
 	 * @return formatted string representation of current day with  "yyyy-MM-dd".
 	 */
-	public static String getDateString2() {
+	public static String getDateString2(Date date) {
 		java.text.SimpleDateFormat formatter =
 				new java.text.SimpleDateFormat(
 						"yyyyMMdd",
 						java.util.Locale.KOREA);
-		return formatter.format(new Date());
+		return formatter.format(date);
 	}
 
 	/**
@@ -195,10 +195,10 @@ public class DateTimeUtil {
 	 * 오늘 날짜를 숫자로 리턴한다.
 	 *<code>getNumberByPattern("dd");</code>
 	 * @return 오늘 날짜.(1~31)
-	 * @see #getNumberByPattern(String)
+	 * @see #getNumberByPattern(String, Date)
 	 */
-	public static int getDay() {
-		return getNumberByPattern("dd");
+	public static int getDay(Date date) {
+		return getNumberByPattern("dd", date);
 	}
 
 	/**
@@ -206,10 +206,10 @@ public class DateTimeUtil {
 	 * 올해를 숫자로 리턴한다.
 	 * <code> getNumberByPattern("yyyy");</code>
 	 * @return 올해를 표현하는 4자리 숫자(예:2005)
-	 * @see #getNumberByPattern(String)
+	 * @see #getNumberByPattern(String, Date)
 	 */
-	public static int getYear() {
-		return getNumberByPattern("yyyy");
+	public static int getYear(Date date) {
+		return getNumberByPattern("yyyy", date);
 	}
 
 	/**
@@ -217,20 +217,31 @@ public class DateTimeUtil {
 	 * 이번달을 숫자로 리턴한다.
 	 * <code>getNumberByPattern("MM");</code>
 	 * @return 이번달을 표현하는 숫자 (1~12)
-	 * @see #getNumberByPattern(String)
+	 * @see #getNumberByPattern(String, Date)
 	 */
-	public static int getMonth() {
-		return getNumberByPattern("MM");
+	public static int getMonth(Date date) {
+		return getNumberByPattern("MM", date);
 	}
 	/**
 	 *
 	 * 현재 시간을 리턴한다.
 	 * <code>getNumberByPattern("HH");</code>
 	 * @return 현재 시간을 표현하는 숫자(1~24)
-	 * @see #getNumberByPattern(String)
+	 * @see #getNumberByPattern(String, Date)
 	 */
-	public static int getHour() {
-		return getNumberByPattern("HH");
+	public static int getHour(Date date) {
+		return getNumberByPattern("HH", date);
+	}
+
+	/**
+	 *
+	 * 현재 시간을 리턴한다.
+	 * <code>getNumberByPattern("HH");</code>
+	 * @return 현재 시간을 표현하는 숫자(1~12)
+	 * @see #getNumberByPattern(String, Date)
+	 */
+	public static int getHour12(Date date) {
+		return getNumberByPattern("hh", date);
 	}
 
 	/**
@@ -238,10 +249,10 @@ public class DateTimeUtil {
 	 * 현재 시각의 분을 리턴한다.
 	 *<code>getNumberByPattern("mm");</code>
 	 * @return 현재 시각중 분을 표현하는 숫자(0~59)
-	 * @see #getNumberByPattern(String)
+	 * @see #getNumberByPattern(String, Date)
 	 */
-	public static int getMin() {
-		return getNumberByPattern("mm");
+	public static int getMin(Date date) {
+		return getNumberByPattern("mm", date);
 	}
 
 	/**
@@ -257,10 +268,10 @@ public class DateTimeUtil {
 	 * @param pattern  "yyyy, MM, dd, HH, mm, ss,SSS"
 	 * @return 현재의 날짜,달,연,시간,분,초 등을 나타내는 숫자값
 	 */
-	public static int getNumberByPattern(String pattern) {
+	public static int getNumberByPattern(String pattern, Date date) {
 		java.text.SimpleDateFormat formatter =
 				new java.text.SimpleDateFormat(pattern, java.util.Locale.KOREA);
-		String dateString = formatter.format(new Date());
+		String dateString = formatter.format(date);
 		return Integer.parseInt(dateString);
 	}
 
@@ -299,10 +310,10 @@ public class DateTimeUtil {
 	 * @param  pattern  "yyyy, MM, dd, HH, mm, ss and more"
 	 * @return formatted string representation of current day and time with  your pattern.
 	 */
-	public static String getFormatString(String pattern) {
+	public static String getFormatString(Date date, String pattern) {
 		java.text.SimpleDateFormat formatter =
 				new java.text.SimpleDateFormat(pattern, java.util.Locale.KOREA);
-		String dateString = formatter.format(new Date());
+		String dateString = formatter.format(date);
 		return dateString;
 	}
 
@@ -311,32 +322,32 @@ public class DateTimeUtil {
 	 * 예) "20040205"
 	 * <code>getFormatString("yyyyMMdd");</code>
 	 * @return formatted string representation of current day with  "yyyyMMdd".
-	 * @see #getFormatString(String)
+	 * @see #getFormatString(Date, String)
 	 */
-	public static String getShortDateString() {
-		return getFormatString("yyyyMMdd");
+	public static String getShortDateString(Date date) {
+		return getFormatString(date, "yyyyMMdd");
 	}
 
 	/**
 	 * 현재 시각을 "HHmmss" 형태의 문자열로 표현하여 리턴한다.
 	 * <code>getFormatString("HHmmss");</code>
 	 * @return formatted string representation of current time with  "HHmmss".
-	 * 	 @see #getFormatString(String)
+	 * 	 @see #getFormatString(Date, String)
 	 */
-	public static String getShortTimeString() {
+	public static String getShortTimeString(Date date) {
 
-		return getFormatString("HHmmss");
+		return getFormatString(date, "HHmmss");
 	}
 
 	/**
 	 * 현재 시각을 "yyyy-MM-dd-HH:mm:ss:SSS" 형태의 문자열로 표현하여 리턴한다.
 	 * <code>getFormatString("yyyy-MM-dd-HH:mm:ss:SSS");</code>
 	 * @return formatted string representation of current time with  "yyyy-MM-dd-HH:mm:ss".
-	 * @see #getFormatString(String)
+	 * @see #getFormatString(Date, String)
 	 */
-	public static String getTimeStampString() {
+	public static String getTimeStampString(Date date) {
 
-		return getFormatString("yyyy-MM-dd-HH:mm:ss:SSS");
+		return getFormatString(date, "yyyy-MM-dd-HH:mm:ss:SSS");
 	}
 
 	/**
@@ -346,10 +357,10 @@ public class DateTimeUtil {
 	 * String timeString= getFormatString("HH:mm:ss");
 	 * </pre></blockquote>
 	 * @return formatted string representation of current time with  "HH:mm:ss".
-	 *	@see #getFormatString(String)
+	 *	@see #getFormatString(Date, String)
 	 */
-	public static String getTimeString() {
-		return getFormatString("HH:mm:ss");
+	public static String getTimeString(Date date) {
+		return getFormatString(date, "HH:mm:ss");
 	}
 
 	/**
@@ -641,8 +652,8 @@ public class DateTimeUtil {
 	 * @exception ParseException 잘못된 날짜이거나. 날짜를 표현하는 문자열이 <code>"yyyyMMdd'</code> 형식에 맞지 않는 경우.
 	 * @see #ageBetween(String, String)
 	 */
-	public static int age(String birth) throws ParseException {
-		return ageBetween(birth, getFormatString("yyyyMMdd"), "yyyyMMdd");
+	public static int age(Date date, String birth) throws ParseException {
+		return ageBetween(birth, getFormatString(date, "yyyyMMdd"), "yyyyMMdd");
 	}
 
 	/**
@@ -688,8 +699,8 @@ public class DateTimeUtil {
 	 * @return 더해진 날짜를 표현하는 문자열
 	 * @exception ParseException 잘못된 날짜이거나. 날짜를 표현하는 문자열이 <code>"yyyyMMdd"</code> 형식에 맞지 않는 경우.
 	 */
-	public static String addDays(int day) throws ParseException {
-		return addDays(getShortDateString(), day, "yyyyMMdd");
+	public static String addDays(Date date, int day) throws ParseException {
+		return addDays(getShortDateString(date), day, "yyyyMMdd");
 	}
 
 	/**
@@ -703,9 +714,9 @@ public class DateTimeUtil {
 	 * @return 더해진 날짜를 표현하는 문자열
 	 * @exception ParseException 잘못된 날짜이거나. 날짜를 표현하는 문자열이 <code>"yyyyMMdd"</code> 형식에 맞지 않는 경우.
 	 */
-	public static String addDays(int day, String format)
+	public static String addDays(Date date, int day, String format)
 			throws ParseException {
-		String today = getShortDateString();
+		String today = getShortDateString(date);
 		String tmp = addDays(today, day, "yyyyMMdd");
 		return changeFormat(tmp, "yyyyMMdd", format);
 	}
@@ -763,9 +774,9 @@ public class DateTimeUtil {
 	 * @return 더해진 시각을 표현하는 문자열
 	 * @exception ParseException 잘못된 날짜이거나. 날짜를 표현하는 문자열이 <code>format</code> 형식에 맞지 않는 경우.
 	 */
-	public static String addTimes( int time, String format)
+	public static String addTimes(Date date, int time, String format)
 			throws ParseException {
-		String fomatted=		getFormatString(format);
+		String fomatted=		getFormatString(date, format);
 		return addTimes(fomatted,time,format);
 	}
 
@@ -773,11 +784,11 @@ public class DateTimeUtil {
 	 * 세계표준시(Universal Time Coordinated)를 "yyyy-MM-ddTHH:mm:ss:SSSZ" 형태의 포멧으로 리턴한다.
 	 * @return UTC time
 	 */
-	public static String getUTCTimeString()
+	public static String getUTCTimeString(Date date)
 	{
 		String ret="";
 		try{
-			ret=addTimes(-9,"yyyy-MM-dd HH:mm:ss:SSS ");
+			ret=addTimes(date, -9,"yyyy-MM-dd HH:mm:ss:SSS ");
 			char rets[]=ret.toCharArray();
 			rets[10]='T';
 			rets[23]='Z';
@@ -1064,10 +1075,10 @@ public class DateTimeUtil {
 	 * @return <tt>true</tt> 현재 시각이 시작 시각(<code>startTime</code>) 과 종료 시각(<code>endTime</code>) 사이에 위치한다.
 	 * @throws ParseException 인자로 전달된 시각이 지정된 포멧("HH:mm" or "HH/mm" 에) 맞지 않거나 올바른 시간이 아닐경우 발생.
 	 */
-	public static boolean isMiddleTime(String startTime,String endTime) throws ParseException
+	public static boolean isMiddleTime(Date date, String startTime,String endTime) throws ParseException
 	{
 
-		String curTime=getFormatString("HH:mm");
+		String curTime=getFormatString(date, "HH:mm");
 		return isMiddleTime(startTime,endTime,curTime);
 
 
