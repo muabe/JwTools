@@ -127,7 +127,7 @@ public class Result extends ResultAdapter{
         return fromJsonList(type);
     }
 
-    public Gson getCustomGson(){
+    public static Gson getCustomGson(){
         GsonBuilder builder = new GsonBuilder();
 
         builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
