@@ -2,6 +2,15 @@ package com.markjmind.jwtools.net;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.markjmind.jwtools.log.Loger;
 import com.squareup.okhttp.CacheControl;
 import com.squareup.okhttp.Call;
@@ -18,11 +27,13 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -476,6 +487,36 @@ public class OkWeb{
     public OkHttpClient getOkHttpClient(){
         return this.client;
     }
+
+
+    public static JsonSerializer<Date> dateSerializer = new JsonSerializer<Date>() {
+        @Override
+        public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext
+                context) {
+            return src == null ? null : new JsonPrimitive(src.getTime());
+        }
+    };
+
+    public static JsonDeserializer<Date> dateDeserialize = new JsonDeserializer<Date>() {
+        @Override
+        public Date deserialize(JsonElement json, Type typeOfT,
+                                JsonDeserializationContext context) throws JsonParseException {
+            return json == null ? null : new Date(json.getAsLong());
+        }
+    };
+
+    public static Gson getReponseGson(){
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Date.class, dateDeserialize);
+        return builder.create();
+    }
+
+    public static Gson getRequestGson(){
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Date.class, dateSerializer);
+        return builder.create();
+    }
+
 
     protected void debugRequest(String method, String text) throws MalformedURLException {
         if (debug) {

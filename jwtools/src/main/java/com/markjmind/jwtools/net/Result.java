@@ -1,11 +1,6 @@
 package com.markjmind.jwtools.net;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.markjmind.jwtools.util.JwJSONReader;
 
@@ -13,9 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -77,13 +70,13 @@ public class Result extends ResultAdapter{
         if(jsonObject==null){
             return null;
         }
-        Gson gson = getCustomGson();
+        Gson gson = OkWeb.getReponseGson();
         Dto result = gson.fromJson(jsonObject.toString(), dtoClass);
         return result;
     }
 
     public <Dto>Dto fromJson(Class<Dto> dtoClass, JSONObject json){
-        Gson gson = getCustomGson();
+        Gson gson = OkWeb.getReponseGson();
         Dto result = gson.fromJson(json.toString(), dtoClass);
         return result;
     }
@@ -93,7 +86,7 @@ public class Result extends ResultAdapter{
         if(jsonObject==null){
             return null;
         }
-        Gson gson = getCustomGson();
+        Gson gson = OkWeb.getReponseGson();
         Dto result = gson.fromJson(jsonObject.toString(), typeToken.getType());
         return result;
     }
@@ -114,7 +107,7 @@ public class Result extends ResultAdapter{
     }
 
     public <Dto>Dto getModel(Class<Dto> dtoClass, JSONObject json){
-        Gson gson = getCustomGson();
+        Gson gson = OkWeb.getReponseGson();
         Dto result = gson.fromJson(json.toString(), dtoClass);
         return fromJson(dtoClass, json);
     }
@@ -127,15 +120,17 @@ public class Result extends ResultAdapter{
         return fromJsonList(type);
     }
 
-    public static Gson getCustomGson(){
-        GsonBuilder builder = new GsonBuilder();
+//    public static Gson getCustomGson(){
+//        GsonBuilder builder = new GsonBuilder();
+//
+//        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+//            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+//                return new Date(json.getAsJsonPrimitive().getAsLong());
+//            }
+//        });
+//
+//        return builder.create();
+//    }
 
-        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                return new Date(json.getAsJsonPrimitive().getAsLong());
-            }
-        });
 
-        return builder.create();
-    }
 }
