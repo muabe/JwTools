@@ -25,11 +25,13 @@ import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -49,7 +51,7 @@ import javax.net.ssl.X509TrustManager;
  * Created by codemasta on 2015-09-14.
  */
 public class OkWeb{
-
+    private String urlEncoding = "UTF-8";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final MediaType MEDIA_TYPE_IMAGE = MediaType.parse("application/octet-stream");
     private OkHttpClient client;
@@ -122,7 +124,7 @@ public class OkWeb{
     }
 
     public <ResultType extends ResultAdapter>ResultType get(Class<ResultType> resultType) throws IOException, WebException {
-        HttpUrl.Builder builder = HttpUrl.parse(new URL(new URL(host), uri).toString() + paramString).newBuilder();
+        HttpUrl.Builder builder = HttpUrl.parse(getFullUrl()).newBuilder();
         String[] keys = getParamKeys();
         for (String key : keys) {
             builder.addEncodedQueryParameter(key, param.get(key));
@@ -149,7 +151,7 @@ public class OkWeb{
         addHeaderAll(reqestBuilder);
 
         RequestBody body = RequestBody.create(JSON, text);
-        reqestBuilder.url(new URL(new URL(host), uri).toString() + paramString);
+        reqestBuilder.url(getFullUrl());
 
         Request request = initMethod(method, reqestBuilder, body);
         debugRequest(method.toString(), text);
@@ -167,7 +169,7 @@ public class OkWeb{
     private <ResultType extends ResultAdapter>ResultType form(METHOD method, Class<ResultType> resultType) throws WebException, IOException {
 
         Request.Builder reqestBuilder = new Request.Builder()
-                .url(new URL(new URL(host), uri).toString()+ paramString)
+                .url(getFullUrl())
                 .cacheControl(new CacheControl.Builder().noCache().build());
 
         addHeaderAll(reqestBuilder);
@@ -247,7 +249,7 @@ public class OkWeb{
             method = METHOD.POST;
         }
         Request.Builder reqestBuilder = new Request.Builder()
-                .url(new URL(new URL(host), uri).toString() + paramString)
+                .url(getFullUrl())
                 .cacheControl(new CacheControl.Builder().noCache().build());
 
         addHeaderAll(reqestBuilder);
@@ -350,6 +352,23 @@ public class OkWeb{
             this.uri = uri;
         }
         return this;
+    }
+
+    private String getFullUrl() throws MalformedURLException {
+        return new URL(new URL(host), uri).toString()+ paramString;
+    }
+
+    public OkWeb setParamEncoding(String charSet){
+        this.urlEncoding = charSet;
+        return this;
+    }
+
+    public String encoding(String msg){
+        try {
+            return URLEncoder.encode(msg, urlEncoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public OkWeb clearHeader() {
@@ -518,12 +537,12 @@ public class OkWeb{
     }
 
 
-    protected void debugRequest(String method, String text) throws MalformedURLException {
+    protected void debugRequest(String method, String text) throws MalformedURLException, UnsupportedEncodingException {
         if (debug) {
             Log.w(this.getClass().getSimpleName(), " ");
             Log.w(this.getClass().getSimpleName(), "----------------------------------------------------------------------------------------------------------");
             Log.d(this.getClass().getSimpleName(), "★ API Call : " + Loger.callLibrary(this.getClass())+" ★");
-            Log.i(this.getClass().getSimpleName(), "○ [Request] " + method + " : " + new URL(new URL(host), uri).toString());
+            Log.i(this.getClass().getSimpleName(), "○ [Request] " + method + " : " + getFullUrl());
             String[] headerKeys = getHeaderKeys();
             if (headerKeys.length > 0) {
                 Log.i(this.getClass().getSimpleName(), "  -Header");

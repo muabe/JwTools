@@ -19,7 +19,7 @@ import java.util.HashMap;
  * @email markjmind@gmail.com
  * @since 2016-06-13
  */
-public class RecycleHolder extends RecyclerView.ViewHolder{
+public class RecycleHolder extends RecyclerView.ViewHolder implements HolderInterface{
     public HashMap<Integer, View> views = new HashMap();
     private Finder finder;
     private View layout;
@@ -81,7 +81,5 @@ public class RecycleHolder extends RecyclerView.ViewHolder{
         return (FrameLayout) getView(id);
     }
 
-    interface Finder{
-        View findViewById(int id);
-    }
+
 }

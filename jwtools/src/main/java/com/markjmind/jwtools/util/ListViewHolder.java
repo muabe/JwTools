@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @email markjmind@gmail.com
  * @since 2016-06-07
  */
-public class ListViewHolder {
+public class ListViewHolder implements HolderInterface{
     public HashMap<Integer, View> views = new HashMap();
     private Finder finder;
     private View layout;

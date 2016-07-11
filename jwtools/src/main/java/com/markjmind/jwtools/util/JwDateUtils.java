@@ -10,6 +10,11 @@ import java.util.Locale;
  * @since 2015-12-29
  */
 public class JwDateUtils {
+    private static Locale locale = Locale.KOREA;
+
+    public static void setDefalutLocal(Locale locale){
+        JwDateUtils.locale = locale;
+    }
 
     public static String getFormat(Date date,  String format, Locale locale)
     {
@@ -19,7 +24,7 @@ public class JwDateUtils {
 
     public static String getFormat(Date date,  String format)
     {
-        return JwDateUtils.getFormat(date, format, Locale.KOREA);
+        return JwDateUtils.getFormat(date, format, locale);
     }
 
     public static int betweenSec(Date from, Date to){
@@ -43,9 +48,9 @@ public class JwDateUtils {
     }
 
     public static int betweenMonth(Date from, Date to){
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", java.util.Locale.KOREA);
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MM", java.util.Locale.KOREA);
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", java.util.Locale.KOREA);
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", locale);
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM", locale);
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", locale);
 
         int fromYear = Integer.parseInt(yearFormat.format(from));
         int toYear = Integer.parseInt(yearFormat.format(to));
@@ -72,32 +77,32 @@ public class JwDateUtils {
     }
 
     public static boolean equalsSec(Date a, Date b){
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMddhhMMss", java.util.Locale.KOREA);
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMddhhMMss", locale);
         return yearFormat.format(a).equals(yearFormat.format(b));
     }
 
     public static boolean equalsMin(Date a, Date b){
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMddhhMM", java.util.Locale.KOREA);
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMddhhMM", locale);
         return yearFormat.format(a).equals(yearFormat.format(b));
     }
 
     public static boolean equalsHour(Date a, Date b){
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMddhh", java.util.Locale.KOREA);
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMddhh", locale);
         return yearFormat.format(a).equals(yearFormat.format(b));
     }
 
     public static boolean equalsDay(Date a, Date b){
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMdd", java.util.Locale.KOREA);
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMMdd", locale);
         return yearFormat.format(a).equals(yearFormat.format(b));
     }
 
     public static boolean equalsMonth(Date a, Date b){
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMM", java.util.Locale.KOREA);
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyyMM", locale);
         return yearFormat.format(a).equals(yearFormat.format(b));
     }
 
     public static boolean equalsYear(Date a, Date b){
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", java.util.Locale.KOREA);
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", locale);
         return yearFormat.format(a).equals(yearFormat.format(b));
     }
 }
