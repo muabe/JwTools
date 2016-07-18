@@ -1,5 +1,6 @@
 package com.markjmind.jwtools.net;
 
+import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -39,6 +41,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import javax.crypto.Cipher;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
@@ -333,6 +338,47 @@ public class OkWeb{
         return "";
     }
 
+    public static String sha1(String s, String keyString) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+
+        SecretKeySpec key = new SecretKeySpec((keyString).getBytes("UTF-8"), "HmacSHA1");
+        Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(key);
+
+        byte[] bytes = mac.doFinal(s.getBytes("UTF-8"));
+        return Base64.encodeToString(bytes, bytes.length);
+    }
+
+    /**
+     * 암호화
+     * @param key
+     * @param message
+     * @return
+     * @throws Exception
+     */
+    public static String encryptToAes(String key, String message) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+
+        byte[] bytes = cipher.doFinal(message.getBytes("UTF-8"));
+        return Base64.encodeToString(bytes, bytes.length);
+    }
+
+    /**
+     * 복호화
+     * @param key
+     * @param msg
+     * @return
+     * @throws Exception
+     */
+    public static String decryptToAes(String key, String msg) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+
+        byte[] bytes = cipher.doFinal(msg.getBytes("UTF-8"));
+        return new String(bytes);
+    }
 
     private void unexpectedCode(Response response, String bodyString) throws WebException {
         if (!response.isSuccessful()) {
