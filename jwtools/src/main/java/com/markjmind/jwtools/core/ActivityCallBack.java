@@ -52,6 +52,8 @@ public class ActivityCallBack implements Application.ActivityLifecycleCallbacks 
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
         Log.d("reg", "onActivitySaveInstanceState");
+
+
     }
 
     @Override

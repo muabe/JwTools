@@ -15,10 +15,17 @@ public class SimpleLog {
     private Class<?> tagClass;
     private String tag;
     public static boolean isLog = true;
+    private LogListener listener;
 
     public SimpleLog(Class<?> tagClass){
         this.tagClass = tagClass;
         this.tag = tagClass.getSimpleName();
+    }
+
+    public SimpleLog(Class<?> tagClass, LogListener listener){
+        this.tagClass = tagClass;
+        this.tag = tagClass.getSimpleName();
+        this.setLogListener(listener);
     }
 
     public SimpleLog(Class<?> tagClass, String tag){
@@ -28,24 +35,36 @@ public class SimpleLog {
 
     public void e(String msg){
         if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("e", tag, msg);
+            }
             Log.e(getLogPoint(), msg);
         }
     }
 
     public void i(String msg){
         if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("i", tag, msg);
+            }
             Log.i(getLogPoint(), msg);
         }
     }
 
     public void d(String msg){
         if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("d", tag, msg);
+            }
             Log.d(getLogPoint(), msg);
         }
     }
 
     public void w(String msg){
         if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("w", tag, msg);
+            }
             Log.w(getLogPoint(), msg);
         }
     }
@@ -62,4 +81,11 @@ public class SimpleLog {
         SimpleLog.isLog = isLog;
     }
 
+    public void setLogListener(LogListener listener){
+        this.listener = listener;
+    }
+
+    public interface LogListener{
+        void log(String state, String tag, String log);
+    }
 }

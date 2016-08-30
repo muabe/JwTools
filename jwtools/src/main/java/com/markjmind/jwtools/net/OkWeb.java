@@ -103,6 +103,14 @@ public class OkWeb{
         return host;
     }
 
+    protected HashMap<String, String> getHeaderMap(){
+        return header;
+    }
+
+    protected HashMap<String, File> getFileMap(){
+        return file;
+    }
+
     public OkWeb setTimeOut(int seconds){
         client.setConnectTimeout(seconds, TimeUnit.SECONDS); // connect timeout
         client.setReadTimeout(seconds, TimeUnit.SECONDS);
@@ -400,7 +408,7 @@ public class OkWeb{
         return this;
     }
 
-    private String getFullUrl() throws MalformedURLException {
+    protected String getFullUrl() throws MalformedURLException {
         return new URL(new URL(host), uri).toString()+ paramString;
     }
 
