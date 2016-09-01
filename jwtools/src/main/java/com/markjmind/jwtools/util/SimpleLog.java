@@ -17,6 +17,8 @@ public class SimpleLog {
     public static boolean isLog = true;
     private LogListener listener;
 
+    private int callNum = 5;
+
     public SimpleLog(Class<?> tagClass){
         this.tagClass = tagClass;
         this.tag = tagClass.getSimpleName();
@@ -69,12 +71,52 @@ public class SimpleLog {
         }
     }
 
+    public void ev(String msg){
+        if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("e", tag, msg);
+            }
+        }
+    }
+
+    public void iv(String msg){
+        if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("i", tag, msg);
+            }
+        }
+    }
+
+    public void dv(String msg){
+        if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("d", tag, msg);
+            }
+        }
+    }
+
+    public void wv(String msg){
+        if(SimpleLog.isLog) {
+            if(listener!=null){
+                listener.log("w", tag, msg);
+            }
+        }
+    }
+
+    public void setCallNum(int callNum){
+        this.callNum = callNum;
+    }
+
     public void setTag(String tag){
         this.tag = tag;
     }
 
+    public Class getTagClass(){
+        return this.tagClass;
+    }
+
     private String getLogPoint(){
-        return "log."+tag+Loger.callMethod(5);
+        return "log."+tag+Loger.callMethod(callNum);
     }
 
     public static void setLog(boolean isLog){

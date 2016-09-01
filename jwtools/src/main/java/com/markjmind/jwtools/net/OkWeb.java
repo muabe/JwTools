@@ -591,7 +591,7 @@ public class OkWeb{
     }
 
 
-    protected void debugRequest(String method, String text) throws MalformedURLException, UnsupportedEncodingException {
+    private void debugRequest(String method, String text) throws MalformedURLException, UnsupportedEncodingException {
         if (debug) {
             Log.w(this.getClass().getSimpleName(), " ");
             Log.w(this.getClass().getSimpleName(), "----------------------------------------------------------------------------------------------------------");
@@ -628,10 +628,13 @@ public class OkWeb{
                 }
             }
         }
+        customRequestLog(method, text);
 
     }
+    protected void customRequestLog(String method, String text) throws MalformedURLException, UnsupportedEncodingException {
 
-    protected void debugResponse(String bodyResult, Response response) {
+    }
+    private void debugResponse(String bodyResult, Response response) {
         if (debug) {
             Log.i(this.getClass().getSimpleName(), " ");
             Log.i(this.getClass().getSimpleName(), "● [Response] Code : " + response.code());
@@ -640,6 +643,11 @@ public class OkWeb{
             Log.w(this.getClass().getSimpleName(), "----------------------------------------------------------------------------------------------------------");
             Log.w(this.getClass().getSimpleName(), " ");
         }
+        customResponseLog(bodyResult, response);
+    }
+
+    protected void customResponseLog(String bodyResult, Response response){
+
     }
 }
 
