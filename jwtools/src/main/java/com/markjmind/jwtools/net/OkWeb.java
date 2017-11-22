@@ -215,11 +215,7 @@ public class OkWeb{
     }
 
     public <ResultType extends ResultAdapter>ResultType post(Class<ResultType> resultType, String text) throws IOException, WebException {
-        if(text==null){
-            return this.form(METHOD.POST, resultType);
-        }else{
-            return this.post(resultType, METHOD.POST, text);
-        }
+        return this.post(resultType, METHOD.POST, text);
     }
     public <ResultType extends ResultAdapter>ResultType put(Class<ResultType> resultType, String text) throws WebException, IOException {
         if(text==null){
